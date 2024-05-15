@@ -1,13 +1,6 @@
 import numpy as np
-import pickle
-import pandas as pd
-import os
 import sacc
 import yaml
-import matplotlib.pyplot as plt
-plt.rcParams['xtick.labelsize'] = 18
-plt.rcParams['ytick.labelsize'] = 18
-plt.rcParams['axes.labelsize'] = 18
 
 class ClsEnsemble(object):
     def __init__(self, s, y):
@@ -15,7 +8,7 @@ class ClsEnsemble(object):
         # Apply scale cuts
         self._apply_scale_cuts(s, y)
 
-        self.indices = np.array([])
+        self.indices = []
         self.data = []
         self.ls = []
         self.pairs = []
@@ -27,18 +20,16 @@ class ClsEnsemble(object):
                     cl_name, t1, t2,
                     return_cov=False,
                     return_ind=True)
-                self.indices = np.append(self.indices, ind)
+                self.indices.append(ind)
                 self.data.append(c_ell)
                 self.ls.append(l)
                 self.pairs.append([t1, t2])
         
-        self.indices = self.indices.astype(int)
         self.cov = s.covariance.dense
-        self.cov = np.transpose(np.transpose(self.cov[self.indices])[self.indices])
         lengths = [len(l) for l in self.ls]
         self.edges  = np.append(np.array([0]), np.cumsum(lengths))
         errs = np.sqrt(np.diag(self.cov))
-        self.errs = self._segment(errs)
+        self.errs = [errs[ind] for ind in self.indices]
 
     def _apply_scale_cuts(self, s, y):
         indices = np.array([])
@@ -52,6 +43,7 @@ class ClsEnsemble(object):
                                     ell__gt=lmin, ell__lt=lmax)
                     indices = np.append(indices, ind)
         if len(indices) != 0:
+            indices = indices.astype(int)
             s.keep_indices(indices)
 
     def _segment(self, A):
