@@ -1,8 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-plt.rcParams['xtick.labelsize'] = 18
-plt.rcParams['ytick.labelsize'] = 18
-plt.rcParams['axes.labelsize'] = 18
 from .cls_ensemble import ClsEnsemble
 from .cls_ensemble import ClSubSemble
 
@@ -52,7 +49,36 @@ def plot_cls(cl_ensembles, wanted_pairs, fmts=['ro', 'bo', 'ko']):
         plt.legend()
         plt.show()
 
-def plot_cov(cle, wanted_pairs):
+def plot_cov(cle, wanted_pairs, logscale=True):
     clse = ClSubSemble(cle, wanted_pairs)
+    edges = [id[0] for id in clse.indices]
+    labels = [pair[0]+' x '+pair[1] for pair in wanted_pairs]
     cov = clse.cov
+    title='Covariance matrix'
+    if logscale:
+        title = 'Log10[Abs(covariance matrix)]'
+        cov = np.log10(abs(cov))
     plt.imshow(cov)
+    plt.xticks(edges, labels, rotation=90)
+    plt.yticks(edges, labels)
+    plt.title(title)
+    plt.colorbar()
+    plt.show()
+
+def plot_corr(cle, wanted_pairs, logscale=True):
+    clse = ClSubSemble(cle, wanted_pairs)
+    edges = [id[0] for id in clse.indices]
+    labels = [pair[0]+' x '+pair[1] for pair in wanted_pairs]
+    cov = clse.cov
+    sig = np.sqrt(np.diag(cov))
+    corr = clse.cov / np.outer(sig, sig)
+    title='correlation matrix'
+    if logscale:
+        title = 'Log10[Abs(correlation matrix)]'
+        corr = np.log10(abs(corr))
+    plt.imshow(corr)
+    plt.xticks(edges, labels, rotation=90)
+    plt.yticks(edges, labels)
+    plt.title(title)
+    plt.colorbar()
+    plt.show()

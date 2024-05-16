@@ -12,7 +12,6 @@ class ClsEnsemble(object):
 
     def _cut(self, s):
         indices = np.array([])
-        print(self.order)
         for cl in self.order:
             t1, t2 = cl["tracers"]
             cls = cl["cls"]
