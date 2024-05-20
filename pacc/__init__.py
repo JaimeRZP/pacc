@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from .cls_ensemble import ClsEnsemble
 from .cls_ensemble import ClSubSemble
+from .cls_ensemble import ClTheoryEnsemble
 
 def plot_cls(cl_ensembles, wanted_pairs, fmts=['ro', 'bo', 'ko']):
     t_i = np.transpose(wanted_pairs)[0]
@@ -21,7 +22,11 @@ def plot_cls(cl_ensembles, wanted_pairs, fmts=['ro', 'bo', 'ko']):
                 ls = ensemble.ls[pos]
                 data = ensemble.data[pos]
                 err = ensemble.errs[pos]
-                axis[i].errorbar(ls, data, yerr=err, fmt=fmts[k], label='Data')
+                if ensemble.label is None:
+                            label = 'Data_{}'.format(k)
+                else:
+                    label = ensemble.label
+                axis[i].errorbar(ls, data, yerr=err, fmt=fmts[k], label=label)
             axis[i].set_title("{}_{}".format(proposed_pair[0],proposed_pair[1]))
             axis[i].set_xscale("log")
             axis[i].set_yscale("log")
@@ -39,7 +44,11 @@ def plot_cls(cl_ensembles, wanted_pairs, fmts=['ro', 'bo', 'ko']):
                         ls = ensemble.ls[pos]
                         data = ensemble.data[pos]
                         err = ensemble.errs[pos]
-                        axis[i, j].errorbar(ls, data, yerr=err, fmt=fmts[k], label='Data')
+                        if ensemble.label is None:
+                            label = 'Data_{}'.format(k)
+                        else:
+                            label = ensemble.label
+                        axis[i, j].errorbar(ls, data, yerr=err, fmt=fmts[k], label=label)
                     axis[i, j].set_title("{}_{}".format(proposed_pair[0],proposed_pair[1]))
                     axis[i, j].set_xscale("log")
                     axis[i, j].set_yscale("log")
