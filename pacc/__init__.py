@@ -1,10 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 from .cls_ensemble import ClsEnsemble
 from .cls_ensemble import ClSubSemble
 from .cls_ensemble import ClTheoryEnsemble
 
-def plot_cls(cl_ensembles, wanted_pairs, fmts=['ro', 'bo', 'ko']):
+def plot_cls(cl_ensembles, wanted_pairs,
+             Xi2s=None, alpha=1.0, show_legend=True):
+    n_ensembles = len(cl_ensembles)
+
+    if Xi2s is None:
+        Xi2s = np.linspace(0, 1, n_ensembles)
+    else:
+        Xi2s = (Xi2s - np.min(Xi2s)) / (np.max(Xi2s) - np.min(Xi2s))
+
+    colormap = cm.winter
+    colors = colormap(np.linspace(0, 1, n_ensembles))
+
     t_i = np.transpose(wanted_pairs)[0]
     t_j = np.transpose(wanted_pairs)[1]
     unique_t_i = np.unique(t_i)
@@ -26,13 +38,14 @@ def plot_cls(cl_ensembles, wanted_pairs, fmts=['ro', 'bo', 'ko']):
                             label = 'Data_{}'.format(k)
                 else:
                     label = ensemble.label
-                axis[i].errorbar(ls, data, yerr=err, fmt=fmts[k], label=label)
-            axis[i].set_title("{}_{}".format(proposed_pair[0],proposed_pair[1]))
+                axis[i].errorbar(ls, data, yerr=err,
+                                 color=colors[k], fmt="o-",
+                                 alpha=alpha,
+                                 label=label)
+            axis[i].set_title("{}_{}".format(proposed_pair[0], proposed_pair[1]))
             axis[i].set_xscale("log")
             axis[i].set_yscale("log")
             npair += 1
-        plt.legend()
-        plt.show()
     else:
         figure, axis = plt.subplots(l_t_i, l_t_j, figsize=(5*l_t_i, 5*l_t_j))
         for i in range(0, l_t_i):
@@ -48,15 +61,19 @@ def plot_cls(cl_ensembles, wanted_pairs, fmts=['ro', 'bo', 'ko']):
                             label = 'Data_{}'.format(k)
                         else:
                             label = ensemble.label
-                        axis[i, j].errorbar(ls, data, yerr=err, fmt=fmts[k], label=label)
+                        axis[i, j].errorbar(ls, data, yerr=err,
+                                            color=colors[k], fmt="o-",
+                                            alpha=alpha,
+                                            label=label)
                     axis[i, j].set_title("{}_{}".format(proposed_pair[0],proposed_pair[1]))
                     axis[i, j].set_xscale("log")
                     axis[i, j].set_yscale("log")
                     npair += 1
                 else:
                     axis[i, j].axis('off')
+    if show_legend:
         plt.legend()
-        plt.show()
+    plt.show()
 
 def plot_cov(cle, wanted_pairs, logscale=True):
     clse = ClSubSemble(cle, wanted_pairs)
