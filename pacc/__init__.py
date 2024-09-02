@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from .cls_ensemble import ClsEnsemble
@@ -6,16 +7,23 @@ from .cls_ensemble import ClSubSemble
 from .cls_ensemble import ClTheoryEnsemble
 
 def plot_cls(cl_ensembles, wanted_pairs,
-             Xi2s=None, alpha=1.0, show_legend=True):
+             Xi2s=None, alpha=1.0,
+             colors=None,
+             show_legend=True, 
+             show_colobar=False):
     n_ensembles = len(cl_ensembles)
 
     if Xi2s is None:
         Xi2s = np.linspace(0, 1, n_ensembles)
     else:
-        Xi2s = (Xi2s - np.min(Xi2s)) / (np.max(Xi2s) - np.min(Xi2s))
+        Xi2s = np.array(Xi2s)
 
-    colormap = cm.winter
-    colors = colormap(np.linspace(0, 1, n_ensembles))
+    if colors is None:
+        colormap = cm.winter
+        norm = mpl.colors.Normalize(vmin=Xi2s.min(), vmax=Xi2s.max())
+        cmap = mpl.cm.ScalarMappable(norm=norm, cmap=colormap)
+        cmap.set_array([])
+        colors = colormap(np.linspace(0, 1, n_ensembles))
 
     t_i = np.transpose(wanted_pairs)[0]
     t_j = np.transpose(wanted_pairs)[1]
@@ -69,11 +77,18 @@ def plot_cls(cl_ensembles, wanted_pairs,
                     axis[i, j].set_xscale("log")
                     axis[i, j].set_yscale("log")
                     npair += 1
+                    if i == l_t_i-1:
+                        axis[i, j].set_xlabel(r"$\ell$")
+                    if j == 0:
+                        axis[i, j].set_ylabel(r"$C_\ell$")
                 else:
                     axis[i, j].axis('off')
     if show_legend:
         plt.legend()
-    plt.show()
+    if show_colobar:
+        figure.subplots_adjust(right=0.8)
+        cbar_ax = figure.add_axes([0.82, 0.15, 0.01, 0.1])
+        figure.colorbar(cmap, cax=cbar_ax, label=r'$\chi^2$')
 
 def plot_cov(cle, wanted_pairs, logscale=True):
     clse = ClSubSemble(cle, wanted_pairs)
