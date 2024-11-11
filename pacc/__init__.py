@@ -74,11 +74,11 @@ def plot_cls(cl_supersembles, wanted_pairs, configs=None):
                 axis[i].set_title("{}_{}".format(proposed_pair[0], proposed_pair[1]))
                 axis[i].set_xscale("log")
                 axis[i].set_yscale("log")
-                axis[i].set_xlim([ls.min()-5, ls.max()+5])
+                axis[i].set_xlim([0.9*ls.min(), 1.1*ls.max()])
                 npair += 1
             if show_colobar:
                 figure.subplots_adjust(right=0.8)
-                cbar_ax = figure.add_axes([0.82, 0.15, 0.01, 0.8])
+                cbar_ax = figure.add_axes([0.82, 0.15, 0.01, 0.7])
                 figure.colorbar(cmap, cax=cbar_ax, label=r'$\chi^2$')
         else:
             if first_ensemble:
@@ -103,7 +103,7 @@ def plot_cls(cl_supersembles, wanted_pairs, configs=None):
                         axis[i, j].set_title("{}_{}".format(proposed_pair[0],proposed_pair[1]))
                         axis[i, j].set_xscale("log")
                         axis[i, j].set_yscale("log")
-                        axis[i, j].set_xlim([ls.min()-5, ls.max()+5])
+                        axis[i, j].set_xlim([0.9*ls.min(), 1.1*ls.max()])
                         npair += 1
                         if i == l_t_i-1:
                             axis[i, j].set_xlabel(r"$\ell$")
@@ -113,7 +113,7 @@ def plot_cls(cl_supersembles, wanted_pairs, configs=None):
                         axis[i, j].axis('off')
             if show_colobar:
                 figure.subplots_adjust(right=0.8)
-                cbar_ax = figure.add_axes([0.82, 0.1, 0.01, 0.15])
+                cbar_ax = figure.add_axes([0.82, 0.1, 0.01, l_t_j/35])
                 figure.colorbar(cmap, cax=cbar_ax, label=r'$\chi^2$')
         first_ensemble = False
         if show_legend:
