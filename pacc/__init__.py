@@ -78,7 +78,7 @@ def plot_cls(cl_supersembles, wanted_pairs, configs=None):
                 npair += 1
             if show_colobar:
                 figure.subplots_adjust(right=0.8)
-                cbar_ax = figure.add_axes([0.82, 0.15, 0.01, 1.0])
+                cbar_ax = figure.add_axes([0.82, 0.15, 0.01, 0.8])
                 figure.colorbar(cmap, cax=cbar_ax, label=r'$\chi^2$')
         else:
             if first_ensemble:
@@ -113,7 +113,7 @@ def plot_cls(cl_supersembles, wanted_pairs, configs=None):
                         axis[i, j].axis('off')
             if show_colobar:
                 figure.subplots_adjust(right=0.8)
-                cbar_ax = figure.add_axes([0.82, 0.15, 0.01, 0.1])
+                cbar_ax = figure.add_axes([0.82, 0.1, 0.01, 0.15])
                 figure.colorbar(cmap, cax=cbar_ax, label=r'$\chi^2$')
         first_ensemble = False
         if show_legend:
