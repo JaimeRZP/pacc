@@ -120,6 +120,7 @@ def plot_cls(cl_supersembles, wanted_pairs, configs=None):
             plt.legend()
         first_ensemble = False
     plt.show()
+    return figure
 
 def plot_cov(cle, wanted_pairs, logscale=True):
     clse = ClSubSemble(cle, wanted_pairs)
