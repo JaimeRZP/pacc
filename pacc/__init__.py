@@ -20,6 +20,93 @@ def _make_default_config(config):
         config["show_colobar"] = False
     return config
 
+def plot_errs(cl_supersembles, wanted_pairs, configs=None):
+    if configs is None:
+        configs = np.array([{} for _ in range(len(cl_supersembles))])
+    first_ensemble = True
+    for (cl_ensembles, config) in zip(cl_supersembles, configs):
+        config = _make_default_config(config)
+        alpha = config["alpha"]
+        colors = config["colors"]
+        show_legend = config["show_legend"]
+        show_colobar = config["show_colobar"]
+        n_ensembles = len(cl_ensembles)
+
+        if colors is None:
+            colormap = cm.brg
+            cmap = mpl.cm.ScalarMappable(cmap=colormap)
+            cmap.set_array([])
+            colors = colormap(np.linspace(0, 1, n_ensembles))
+
+        t_i = np.transpose(wanted_pairs)[0]
+        t_j = np.transpose(wanted_pairs)[1]
+        unique_t_i = np.unique(t_i)
+        unique_t_j = np.unique(t_j)
+        l_t_i = len(unique_t_i)
+        l_t_j = len(unique_t_j)
+        npair = 0
+
+        if (t_j == t_i).all():
+            if first_ensemble:
+                figure, axis = plt.subplots(1, l_t_j, figsize=(5*l_t_i, 5*1))
+            for i in range(0, l_t_i):
+                proposed_pair = [unique_t_i[i], unique_t_j[i]]
+                for k, ensemble in enumerate(cl_ensembles):
+                    pos = ensemble.pairs.index(proposed_pair)
+                    ls = ensemble.ls[pos]
+                    data = ensemble.data[pos]
+                    err = ensemble.errs[pos]
+                    if ensemble.label is None:
+                                label = 'Data_{}'.format(k)
+                    else:
+                        label = ensemble.label
+                    axis[i].plot(ls,err,
+                                color=colors[k], fmt="o-",
+                                alpha=alpha,
+                                label=label)
+                axis[i].set_title("{}_{}".format(proposed_pair[0], proposed_pair[1]))
+                axis[i].set_xscale("log")
+                axis[i].set_yscale("log")
+                axis[i].set_xlim([0.9*ls.min(), 1.1*ls.max()])
+                npair += 1
+        else:
+            if first_ensemble:
+                figure, axis = plt.subplots(l_t_i, l_t_j, figsize=(5*l_t_i, 5*l_t_j))
+            for i in range(0, l_t_i):
+                for j in range(0, l_t_j):
+                    proposed_pair = [unique_t_i[i], unique_t_j[j]]
+                    if proposed_pair in wanted_pairs:
+                        for k, ensemble in enumerate(cl_ensembles):
+                            pos = ensemble.pairs.index(proposed_pair)
+                            ls = ensemble.ls[pos]
+                            data = ensemble.data[pos]
+                            err = ensemble.errs[pos]
+                            if ensemble.label is None:
+                                label = 'Data_{}'.format(k)
+                            else:
+                                label = ensemble.label
+                            axis[i, j].plot(ls, err,
+                                            color=colors[k],
+                                            alpha=alpha,
+                                            label=label)
+                        axis[i, j].set_title("{}_{}".format(proposed_pair[0],proposed_pair[1]))
+                        axis[i, j].set_xscale("log")
+                        axis[i, j].set_yscale("log")
+                        axis[i, j].set_xlim([0.9*ls.min(), 1.1*ls.max()])
+                        npair += 1
+                        if i == l_t_i-1:
+                            axis[i, j].set_xlabel(r"$\ell$")
+                        if j == 0:
+                            axis[i, j].set_ylabel(r'$(\frac{\partial t}{\partial_\theta}) (\frac{\partial t}{\partial_\theta})^T/ \rm{Cov}$')
+                    else:
+                        axis[i, j].axis('off')
+        first_ensemble = False
+        if show_legend:
+            plt.legend()
+        first_ensemble = False
+    plt.show()
+    return figure
+
 def plot_cls(cl_supersembles, wanted_pairs, configs=None):
     if configs is None:
         configs = np.array([{} for _ in range(len(cl_supersembles))])
